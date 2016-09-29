@@ -1,0 +1,23 @@
+<#assign lastUpdated = .now>
+/***************************************************************
+* file: ${nameAndExt}
+* author: ${user}
+* class: CS 445 – Computer Graphics
+*
+* assignment: ${package} 
+* date last modified: ${lastUpdated?string.short}
+*
+* purpose: 
+*
+****************************************************************/ 
+package ${package};
+
+public class ${name} {
+
+    // method: main
+    // purpose: 
+    public static void main(String[] args) {
+        // TODO code application logic here
+    }
+    
+}

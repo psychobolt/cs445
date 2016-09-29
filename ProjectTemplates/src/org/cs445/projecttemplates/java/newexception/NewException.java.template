@@ -1,0 +1,24 @@
+<#assign lastUpdated = .now>
+/***************************************************************
+* file: ${nameAndExt}
+* author: ${user}
+* class: CS 445 – Computer Graphics
+*
+* assignment: ${package} 
+* date last modified: ${lastUpdated?string.short}
+*
+* purpose: 
+*
+****************************************************************/ 
+package ${package};
+
+public class ${name} extends Exception {
+    
+    public ${name}() {
+    }
+
+    public ${name}(String msg) {
+        super(msg);
+    }
+    
+}
