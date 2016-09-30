@@ -4,7 +4,7 @@
 * author: ${user}
 * class: CS 445 – Computer Graphics
 *
-* assignment: ${package} 
+* assignment: ${project.name} 
 * date last modified: ${lastUpdated?string.short}
 *
 * purpose: 
@@ -12,6 +12,13 @@
 ****************************************************************/ 
 package ${package};
 
-public enum ${name} {
+public class ${name} extends Exception {
+    
+    public ${name}() {
+    }
+
+    public ${name}(String msg) {
+        super(msg);
+    }
     
 }

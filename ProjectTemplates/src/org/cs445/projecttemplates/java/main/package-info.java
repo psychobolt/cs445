@@ -3,9 +3,9 @@
         iconBase="org/cs445/projecttemplates/Default.png", 
         displayName = "#JAVAtemplate_displayName", 
         content = "Main.java.template",
-        description = "Main.html",
+        description = "Description.html",
         scriptEngine="freemarker")
-@Messages(value = "JAVAtemplate_displayName=Java main class")
+@Messages(value = "JAVAtemplate_displayName=Java Main Class")
 package org.cs445.projecttemplates.java.main;
 
 import org.netbeans.api.templates.TemplateRegistration;

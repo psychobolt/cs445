@@ -1,16 +1,21 @@
 /***************************************************************
 * file: Main.java
-* author: 
+* author: Michael Tran <michaeltran1@cpp.edu>
 * class: CS 445 – Computer Graphics
 *
-* assignment: 
-* date last modified: 
+* assignment: Program 1
+* date last modified: 9/29/2016 10:20PM
 *
 * purpose: 
 *
 ****************************************************************/ 
-package org.cs445.project;
+package org.cs445.program1;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -18,12 +23,19 @@ import static org.lwjgl.opengl.GL11.*;
 public class Main {
 
     public static final int WINDOW_WIDTH = 640;
-    public static final int WINDOW_HIEGHT = 480;
-    public static final String WINDOW_TITLE = "Sample Project";
+    public static final int WINDOW_HEIGHT = 480;
+    public static final String WINDOW_TITLE = "Program 1";
     
     // method: main
     // purpose: Initialize and calls the start
     public static void main(String[] args) {
+        String filepath = args.length == 1 ? args[0] : new File("src/org/cs445/program1/coordinates.txt").getAbsolutePath();
+        try (Stream<String> stream = Files.lines(Paths.get(filepath))) {
+            stream.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
         Main main = new Main();
         main.start();
     }
@@ -46,7 +58,7 @@ public class Main {
     // Default: 640 x 480, window mode
     private void createWindow() throws Exception {
         Display.setFullscreen(false);
-        Display.setDisplayMode(new DisplayMode(WINDOW_WIDTH, WINDOW_HIEGHT));
+        Display.setDisplayMode(new DisplayMode(WINDOW_WIDTH, WINDOW_HEIGHT));
         Display.setTitle(WINDOW_TITLE);
         Display.create();
     }
@@ -59,7 +71,7 @@ public class Main {
         glLoadIdentity();
         // Setup an orthographic matrix with the window's resolution size
         // Clipping distance between -1 to 1
-        glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HIEGHT, 1, -1);
+        glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     }
@@ -72,14 +84,8 @@ public class Main {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glLoadIdentity();
                 
-                // Render two yellow points
-                glColor3f(1.0f, 1.0f, 0.0f);
-                glPointSize(10);
-                
-                glBegin(GL_POINTS);
-                    glVertex2f(350.0f, 150.0f);
-                    glVertex2f(50.0f, 50.0f);
-                glEnd();
+                // Render shapes
+                renderShapes();
                 
                 Display.update();
                 Display.sync(60);
@@ -88,5 +94,9 @@ public class Main {
             }
         }
         Display.destroy();
+    }
+    
+    private void renderShapes() {
+        //  TODO
     }
 }
