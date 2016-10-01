@@ -4,24 +4,28 @@
 * class: CS 445 – Computer Graphics
 *
 * assignment: Program 1
-* date last modified: 9/29/2016 10:20PM
+* date last modified: 9/30/2016 5:08PM
 *
-* purpose: 
+* purpose: This class loads any models provided, creates the main window, and 
+* renders to it.
+* 
+* Usage e.g.,
+* java -jar Program1.jar /home/user/root/workspace/geo.assets ./coordinates.txt
+* Passing no arguments will load default models
 *
 ****************************************************************/ 
 package org.cs445.program1;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
+import org.cs445.program1.manager.ObjectManager;
+import org.cs445.program1.raster.Rasterizer;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
 
+    // Public Main Window constants
     public static final int WINDOW_WIDTH = 640;
     public static final int WINDOW_HEIGHT = 480;
     public static final String WINDOW_TITLE = "Program 1";
@@ -29,15 +33,23 @@ public class Main {
     // method: main
     // purpose: Initialize and calls the start
     public static void main(String[] args) {
-        String filepath = args.length == 1 ? args[0] : new File("src/org/cs445/program1/coordinates.txt").getAbsolutePath();
-        try (Stream<String> stream = Files.lines(Paths.get(filepath))) {
-            stream.forEach(System.out::println);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+        processArgs(args);
         Main main = new Main();
         main.start();
+    }
+    
+    // method: processArgs
+    // purpose: Process command arguments
+    public static void processArgs(String[] args) {
+        if (args.length > 0) {
+            for (String filepath : args) {
+                ObjectManager.getInstance().readModelsFromFile(filepath);
+            }
+        } else {
+            ObjectManager.getInstance().readModelsFromFile(
+                new File("src/org/cs445/program1/coordinates.txt")
+                    .getAbsolutePath());
+        }
     }
     
     // method: start
@@ -84,8 +96,10 @@ public class Main {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glLoadIdentity();
                 
-                // Render shapes
-                renderShapes();
+                // render all drawable models
+                Rasterizer.getInstance().getRasterModels().forEach(model -> {
+                    model.render();
+                });
                 
                 Display.update();
                 Display.sync(60);
@@ -94,9 +108,5 @@ public class Main {
             }
         }
         Display.destroy();
-    }
-    
-    private void renderShapes() {
-        //  TODO
     }
 }

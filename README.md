@@ -11,7 +11,7 @@ Repository for my work in a Computer Graphics course
 ### Configuring a new project
 
 1. Install/Reload ProjectTemplates in NetBeans.
-2. Create a Default Project from CS445,
+2. Create a Default Project from CS445 category.
 3. Add library LWJGL-2.9.2. See [wiki guide](http://wiki.lwjgl.org/wiki/Setting_Up_LWJGL_with_NetBeans).
 4. Include the native library that is specific to your environment (e.g. windows, macosx, linux, solaris) to LWJGL-2.9.2's classes.
 5. Go to Tools > Templates > Settings.
