@@ -46,7 +46,7 @@ public class GeometryFileReader {
                     RasterPoint end = new RasterPoint(
                         Integer.parseInt(endpoint[0]), 
                         Integer.parseInt(endpoint[1]));                   
-                    shapes.add(new RasterlLine(start, end));
+                    shapes.add(new RasterLine(start, end));
                 } else if ("c".equals(token)) {
                     String[] point = tokens[1].split(",");
                     RasterPoint center = new RasterPoint(

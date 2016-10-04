@@ -16,7 +16,7 @@ package org.cs445.program1.raster;
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.util.vector.Vector3f;
 
-public class RasterlLine extends RasterShape {
+public class RasterLine extends RasterShape {
     
     private final RasterPoint start;
     private final RasterPoint end;
@@ -27,7 +27,7 @@ public class RasterlLine extends RasterShape {
     private final int incrementRight;
     private final int incrementUpRight;
     
-    public RasterlLine(RasterPoint start, RasterPoint end) {
+    public RasterLine(RasterPoint start, RasterPoint end) {
         this.start = start;
         this.end = end;
         outlineColor = new Vector3f(1.0f, 0.0f, 0.0f);
