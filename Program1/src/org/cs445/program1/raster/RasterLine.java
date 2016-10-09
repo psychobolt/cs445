@@ -5,7 +5,7 @@
  * class: CS 445 – Computer Graphics
  *
  * assignment: Program 1 
- * date last modified: 9/30/16 3:51 PM
+ * date last modified: 10/9/16 11:33 AM
  *
  * purpose: A class that represents a 2D raster line 
  *
@@ -20,22 +20,26 @@ public class RasterLine extends RasterShape {
     
     private final RasterPoint start;
     private final RasterPoint end;
-    
     private final int dx;
     private final int dy;
-    
-    private final int incrementRight;
-    private final int incrementUpRight;
+    private final float slope;
+    private final int startX;
+    private final int startY;
+    private final int endX;
+    private final int endY;
     
     public RasterLine(RasterPoint start, RasterPoint end) {
         this.start = start;
         this.end = end;
         outlineColor = new Vector3f(1.0f, 0.0f, 0.0f);
-        
         dx = end.getX() - start.getX();
         dy = end.getY() - start.getY();
-        incrementRight = 2 * dy;
-        incrementUpRight = 2 * (dy - dx);
+        slope = dx == 0 ? Float.POSITIVE_INFINITY : ((float) dy) / dx;
+        startX = Math.min(start.getX(), end.getX());
+        startY = slope >= 0 ? Math.min(start.getY(), end.getY()) :
+                            Math.max(start.getY(), end.getY());
+        endX = Math.max(start.getX(), end.getX());
+        endY = Math.max(start.getY(), end.getY());
     }
     
     // method: getStart
@@ -50,26 +54,74 @@ public class RasterLine extends RasterShape {
         return end;
     }
 
-    // method: render
+    // method: renderDiagonalLine
     // purpose: Renders the line from left to right based on Midpoint algorithm
-    // Only lines with -1 < slope < 1 are handled
     @Override
     public void render() {
         glColor3f(outlineColor.x, outlineColor.y, outlineColor.z);
-        int x = start.getX();
-        int y = start.getY();
-        int d = 2 * dy - dx;
         start.render();
-        while (x < end.getX()) {
-            x += 1;
-            if (d > 0) {
-                d += incrementUpRight;
-                y += 1;
+        if (slope == 0) {
+            renderHorizontalLine();
+        } else if (slope == Float.POSITIVE_INFINITY) {
+            renderVerticalLine();
+        } else {
+            renderDiagonalLine();
+        }
+        end.render();
+    }
+    
+    // method: renderHorizontalLine
+    // purpose: Renders the horizontal line
+    private void renderHorizontalLine() {
+        int x = Math.min(start.getX(), end.getX());
+        int y = startY;
+        while (x < endX) {
+            new RasterPoint(x, y).render();
+            x++;
+        }
+    }
+    
+    // method: renderVerticalLine
+    // purpose: Renders the vertical line
+    private void renderVerticalLine() {
+        int x = startX;
+        int y = Math.min(start.getY(), end.getY());
+        while (y < endY) {
+            new RasterPoint(x, y).render();
+            y++;
+        }
+    }
+    
+    // method: renderDiagonalLine
+    // purpose: Renders the line with a diagonal incline/decline slope.
+    private void renderDiagonalLine() {
+        //TODO optimize calculations
+        boolean moveY = Math.abs(slope) > 1;
+        int dx = Math.abs(this.dx);
+        int dy = Math.abs(this.dy);
+        int increment = moveY ? 2 * dx : 2 * dy;
+        int incrementXY = moveY ? 2 * (dx - dy) : 2 * (dy - dx);
+        int x = startX;
+        int y = startY;
+        int d = moveY ? 2 * dx - dy : 2 * dy - dx;
+        int yOffset = slope > 0 ? 1 : -1;
+        while (moveY ? y < endY : x < endX) {
+            if (moveY) {
+                y += yOffset;
             } else {
-                d += incrementRight;
+                x++;
+            }
+            if (d > 0) {
+                d += incrementXY;
+                if (moveY) {
+                    x++;
+                } else {
+                    y += yOffset;
+                }
+            } else {
+                d += increment;
             }
             new RasterPoint(x, y).render();
         }
     }
-    
 }

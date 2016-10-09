@@ -19,6 +19,7 @@ package org.cs445.program1;
 import java.io.File;
 import org.cs445.program1.manager.ObjectManager;
 import org.cs445.program1.raster.Rasterizer;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -91,7 +92,7 @@ public class Main {
     // method: render
     // purpose: Render a scene to the GL context within a render loop
     private void render() {
-        while(!Display.isCloseRequested()) {
+        while(!isCloseRequested()) {
             try {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glLoadIdentity();
@@ -108,5 +109,12 @@ public class Main {
             }
         }
         Display.destroy();
+    }
+    
+    // method: isCloseRequested
+    // purpose: Return true if the window close event is triggered
+    private boolean isCloseRequested() {
+        return Display.isCloseRequested() ||
+               Keyboard.isKeyDown(Keyboard.KEY_ESCAPE);
     }
 }
