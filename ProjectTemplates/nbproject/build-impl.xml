@@ -39,7 +39,7 @@
         </condition>
     </fail>
     <import file="${harness.dir}/build.xml"/>
-    <zip basedir="../SampleProject" destfile="../ProjectTemplates/src/org/cs445/projecttemplates/DefaultProject.zip">
+    <zip basedir="../Program1" destfile="../ProjectTemplates/src/org/cs445/projecttemplates/DefaultProject.zip">
         <exclude name="**/build/"/>
         <exclude name="**/dist/"/>
         <exclude name="**/nbproject/private/"/>
