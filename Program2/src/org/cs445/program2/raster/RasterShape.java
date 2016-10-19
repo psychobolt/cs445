@@ -20,4 +20,5 @@ public abstract class RasterShape extends Raster {
     protected Vector3f outlineColor;
     
     protected Vector3f fillColor;
+    
 }

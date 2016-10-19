@@ -17,6 +17,8 @@
 package org.cs445.program2;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.cs445.program2.manager.ObjectManager;
 import org.cs445.program2.raster.Rasterizer;
 import org.lwjgl.input.Keyboard;
@@ -30,6 +32,9 @@ public class Main {
     public static final int WINDOW_WIDTH = 640;
     public static final int WINDOW_HEIGHT = 480;
     public static final String WINDOW_TITLE = "Program 2";
+    
+    private static final Logger LOGGER = 
+            Logger.getLogger(Main.class.getSimpleName());
     
     // method: main
     // purpose: Initialize and calls the start
@@ -62,7 +67,7 @@ public class Main {
             initGL();
             render();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Failed to create window", e);
         }
     }
     
@@ -97,6 +102,7 @@ public class Main {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glLoadIdentity();
                 
+                glTranslatef(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f, 0.0f);
                 // render all drawable models
                 Rasterizer.getInstance().getRasterModels().forEach(model -> {
                     model.render();
@@ -105,7 +111,7 @@ public class Main {
                 Display.update();
                 Display.sync(60);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Failed to render the scene", e);
             }
         }
         Display.destroy();

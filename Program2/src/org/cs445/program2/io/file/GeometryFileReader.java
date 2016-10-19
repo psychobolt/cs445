@@ -5,7 +5,7 @@
  * class: CS 445 – Computer Graphics
  *
  * assignment: Program 2 
- * date last modified: 10/17/16 3:42PM
+ * date last modified: 10/18/16 10:03PM
  *
  * purpose: Reads a file containing a list of geometry.
  *
@@ -85,57 +85,63 @@ public class GeometryFileReader {
                         float g = Float.parseFloat(tokens[2]);
                         float b = Float.parseFloat(tokens[3]);
                         Vector3f color = new Vector3f(r, g, b);
-                        // get vertices
                         List<RasterPoint> vertices = new LinkedList<>();
+                        List<Transform<?>> transforms = new LinkedList<>();
+                        // get vertices
                         while (scanner.hasNext()) {
                             line = scanner.nextLine();
                             tokens = line.split("\\s+");
                             if ("T".equals(tokens[0])) {
+                                // get transforms
+                                while (scanner.hasNext()) {
+                                    line = scanner.nextLine();
+                                    tokens = line.split("\\s+");
+                                    Transform.Type type;
+                                    Transform<?> transform;
+                                    if ("r".equals(tokens[0])) {
+                                        type = Transform.Type.Rotate;
+                                        Vector3f rotation = new Vector3f(
+                                            Float.parseFloat(tokens[1]),
+                                            Float.parseFloat(tokens[2]),
+                                            Float.parseFloat(tokens[3])
+                                        );
+                                        transform = new Transform<>(type, rotation);
+                                    } else if ("s".equals(tokens[0])) {
+                                        type = Transform.Type.Scale;
+                                        Vector4f scale = new Vector4f(
+                                            Float.parseFloat(tokens[1]),
+                                            Float.parseFloat(tokens[2]),
+                                            Float.parseFloat(tokens[3]),
+                                            Float.parseFloat(tokens[4])
+                                        );
+                                        transform = new Transform<>(type, scale);
+                                    } else if ("t".equals(tokens[0])) {
+                                        type = Transform.Type.Translate;
+                                        Vector2f translate = new Vector2f(
+                                            Float.parseFloat(tokens[1]),
+                                            Float.parseFloat(tokens[2])
+                                        );
+                                        transform = new Transform<>(type, translate);
+                                    } else {
+                                        break;
+                                    }
+                                    transforms.add(transform);
+                                }
+                                token = tokens[0];
                                 break;
                             }
-                            vertices.add(new RasterPoint(
-                                Integer.parseInt(tokens[0]), 
-                                Integer.parseInt(tokens[1])
-                            ));
-                        }
-                        // get transforms
-                        List<Transform<?>> transforms = new LinkedList<>();
-                        while (scanner.hasNext()) {
-                            line = scanner.nextLine();
-                            tokens = line.split("\\s+");
-                            Transform.Type type;
-                            Transform<?> transform;
-                            if ("r".equals(tokens[0])) {
-                                type = Transform.Type.Rotate;
-                                Vector3f rotation = new Vector3f(
-                                    Float.parseFloat(tokens[1]),
-                                    Float.parseFloat(tokens[2]),
-                                    Float.parseFloat(tokens[3])
-                                );
-                                transform = new Transform<>(type, rotation);
-                            } else if ("s".equals(tokens[0])) {
-                                type = Transform.Type.Scale;
-                                Vector4f scale = new Vector4f(
-                                    Float.parseFloat(tokens[1]),
-                                    Float.parseFloat(tokens[2]),
-                                    Float.parseFloat(tokens[3]),
-                                    Float.parseFloat(tokens[4])
-                                );
-                                transform = new Transform<>(type, scale);
-                            } else if ("t".equals(tokens[0])) {
-                                type = Transform.Type.Translate;
-                                Vector2f translate = new Vector2f(
-                                    Float.parseFloat(tokens[1]),
-                                    Float.parseFloat(tokens[2])
-                                );
-                                transform = new Transform<>(type, translate);
-                            } else {
+                            try {
+                                vertices.add(new RasterPoint(
+                                    Integer.parseInt(tokens[0]), 
+                                    Integer.parseInt(tokens[1])
+                                ));
+                            } catch (NumberFormatException e) {
+                                token = tokens[0];
                                 break;
                             }
-                            transforms.add(transform);
                         }
                         shapes.add(new RasterPolygon(color, vertices, transforms));
-                        token = tokens[0];
+                        
                     } else {
                         break;
                     }
