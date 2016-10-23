@@ -5,7 +5,7 @@
  * class: CS 445 – Computer Graphics
  *
  * assignment: Program 2 
- * date last modified: 9/30/16 3:52 PM
+ * date last modified: 10/21/16 10:12 AM
  *
  * purpose: A class that represents a 2D raster ellipse
  *
@@ -16,9 +16,9 @@ package org.cs445.program2.raster;
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.util.vector.Vector3f;
 
-public class RasterEllipse extends RasterShape {
+public class RasterEllipse extends Raster {
     
-    private final RasterPoint center;
+    private RasterPoint center;
     private final float radiusX;
     private final float radiusY;
     private static final double CIRCUMFERENCE = 2 * Math.PI;
@@ -42,6 +42,13 @@ public class RasterEllipse extends RasterShape {
             glVertex2d(center.getX() + x, center.getY() + y);
         }
         glEnd();
+    }
+
+    // method: transform
+    // purpose: Apply any transformations on the center
+    @Override
+    public RasterEllipse transform() {
+        return new RasterEllipse(transform(center), radiusX, radiusY);
     }
     
 }

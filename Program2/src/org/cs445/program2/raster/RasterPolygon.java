@@ -5,7 +5,7 @@
  * class: CS 445 – Computer Graphics
  *
  * assignment: Program 2 
- * date last modified: 10/19/16 9:38 AM
+ * date last modified: 10/23/16 10:03 AM
  *
  * purpose: A class that represents a 2D polygon
  *
@@ -13,32 +13,28 @@
  */
 package org.cs445.program2.raster;
 
+import java.util.Collection;
 import static org.lwjgl.opengl.GL11.*;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.cs445.program2.transform.Transform;
 import org.lwjgl.util.vector.Vector3f;
 
-public class RasterPolygon extends RasterShape {
+public class RasterPolygon extends Raster {
 
-    private final List<RasterPoint> vertices;
-    private final Collection<Transform<?>> transforms;
+    private final Collection<RasterPoint> vertices;
     private final List<Edge> allEdges;
     private final Set<Edge> globalEdges;
     
     public RasterPolygon(
             Vector3f fillColor, 
-            List<RasterPoint> vertices, 
-            Collection<Transform<?>> transforms) {
+            List<RasterPoint> vertices) {
         this.fillColor = fillColor;
         this.vertices = vertices;
-        this.transforms = transforms;
         allEdges = new LinkedList<>();
         for (int i = 0; i < vertices.size() - 1; i++) {
             addEdge(vertices.get(i), vertices.get(i + 1));
@@ -77,12 +73,12 @@ public class RasterPolygon extends RasterShape {
     // purpose: Renders the polygon using the scanline fill algorithm
     @Override
     public void render() {
-        TreeSet<Edge> globalEdges = new TreeSet<>(this.globalEdges);
-        Set<Edge> activeEdges = new TreeSet<>();
-        float scanLine = globalEdges.first().yMin;
-        float yMax = globalEdges.last().yMax;
         glColor3f(fillColor.x, fillColor.y, fillColor.z);
         glBegin(GL_POINTS);
+        TreeSet<Edge> globalEdges = new TreeSet<>(this.globalEdges);
+        TreeSet<Edge> activeEdges = new TreeSet<>();
+        float scanLine = globalEdges.first().yMin;
+        float yMax = globalEdges.last().yMax;
         while(scanLine < yMax){
             // remove any active edges where Y-Max equals scan-line
             Iterator<Edge> iter = activeEdges.iterator();
@@ -104,7 +100,7 @@ public class RasterPolygon extends RasterShape {
                 }
             }
             // fill based on edges' x-val
-            float x = 0.0f; // = Float.POSITIVE_INFINITY;
+            float x = Float.POSITIVE_INFINITY;
             short parity = 0; // even if 0, else odd
             for (Edge activeEdge : activeEdges) {
                 if (parity == 1) { // render pixel if parity is odd
@@ -122,14 +118,22 @@ public class RasterPolygon extends RasterShape {
                 }
             }
             // increment edges X-val
-            activeEdges = activeEdges.stream().map(edge -> {
-                return new Edge(
+            activeEdges = new TreeSet<>(activeEdges.stream().map(edge -> {
+                return edge.slope == 0 ? edge : new Edge(
                     edge.yMin, edge.yMax, edge.xVal + edge.mInverse, edge.slope, true
                 );
-            }).collect(Collectors.toSet());
+            }).collect(Collectors.toSet()));
             scanLine++;
         }
         glEnd();
+    }
+
+    
+    @Override
+    public RasterPolygon transform() {
+        return new RasterPolygon(fillColor, this.vertices.stream()
+                .map(vertex -> transform(vertex))
+                .collect(Collectors.toList()));
     }
     
     private static class Edge implements Comparable<Edge> {
@@ -158,8 +162,8 @@ public class RasterPolygon extends RasterShape {
             if (this == e) {
                 return 0;
             }
-            if (active && xVal < e.xVal) {
-                return -1;
+            if (active) {
+                return  xVal < e.xVal ? -1 : 1;
             } else if (yMin < e.yMin) {
                 return -1;
             } else if (yMin == e.yMin) {

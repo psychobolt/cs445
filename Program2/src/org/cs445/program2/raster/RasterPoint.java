@@ -5,7 +5,7 @@
  * class: CS 445 – Computer Graphics
  *
  * assignment: Program 2 
- * date last modified: 9/30/16 1:44 PM
+ * date last modified: 10/21/16 19:15 AM
  *
  * purpose: A class that represents a 2D point in raster space
  *
@@ -44,5 +44,10 @@ public class RasterPoint extends Raster {
         glBegin(GL_POINTS);
             glVertex2i(x, y);
         glEnd();
+    }
+
+    @Override
+    public RasterPoint transform() {
+        return transform(this);
     }
 }

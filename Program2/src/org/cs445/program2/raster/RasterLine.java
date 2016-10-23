@@ -5,7 +5,7 @@
  * class: CS 445 – Computer Graphics
  *
  * assignment: Program 2 
- * date last modified: 10/17/16 11:04 AM
+ * date last modified: 10/21/16 10:10 AM
  *
  * purpose: A class that represents a 2D raster line 
  *
@@ -16,10 +16,10 @@ package org.cs445.program2.raster;
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.util.vector.Vector3f;
 
-public class RasterLine extends RasterShape {
+public class RasterLine extends Raster {
     
-    private final RasterPoint start;
-    private final RasterPoint end;
+    private RasterPoint start;
+    private RasterPoint end;
     private final int dx;
     private final int dy;
     private final float slope;
@@ -123,5 +123,10 @@ public class RasterLine extends RasterShape {
             }
             new RasterPoint(x, y).render();
         }
+    }
+
+    @Override
+    public RasterLine transform() {
+        return new RasterLine(transform(start), transform(end));
     }
 }

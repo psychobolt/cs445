@@ -5,7 +5,7 @@
  * class: CS 445 – Computer Graphics
  *
  * assignment: Program 2 
- * date last modified: 10/18/16 10:03PM
+ * date last modified: 10/23/16 9:44AM
  *
  * purpose: Reads a file containing a list of geometry.
  *
@@ -26,10 +26,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cs445.program2.raster.RasterPolygon;
-import org.cs445.program2.transform.Transform;
-import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
 public class GeometryFileReader {
     
@@ -86,42 +84,42 @@ public class GeometryFileReader {
                         float b = Float.parseFloat(tokens[3]);
                         Vector3f color = new Vector3f(r, g, b);
                         List<RasterPoint> vertices = new LinkedList<>();
-                        List<Transform<?>> transforms = new LinkedList<>();
+                        List<Matrix3f> transforms = new LinkedList<>();
                         // get vertices
                         while (scanner.hasNext()) {
                             line = scanner.nextLine();
+                            if (line.startsWith("//")) {
+                                continue;
+                            }
                             tokens = line.split("\\s+");
                             if ("T".equals(tokens[0])) {
                                 // get transforms
                                 while (scanner.hasNext()) {
                                     line = scanner.nextLine();
                                     tokens = line.split("\\s+");
-                                    Transform.Type type;
-                                    Transform<?> transform;
+                                    Matrix3f transform = new Matrix3f();
                                     if ("r".equals(tokens[0])) {
-                                        type = Transform.Type.Rotate;
-                                        Vector3f rotation = new Vector3f(
-                                            Float.parseFloat(tokens[1]),
-                                            Float.parseFloat(tokens[2]),
-                                            Float.parseFloat(tokens[3])
-                                        );
-                                        transform = new Transform<>(type, rotation);
+                                        float delta = Float.parseFloat(tokens[1]);
+                                        float x = Float.parseFloat(tokens[2]);
+                                        float y = Float.parseFloat(tokens[3]);
+                                        float sin = (float) Math.sin(delta);
+                                        float cos = (float) Math.cos(delta);
+                                        transform.m00 = cos;
+                                        transform.m01 = sin;
+                                        transform.m10 = -sin;
+                                        transform.m11 = cos;
+                                        transform.m20 = x * (1 - cos) + y * sin;
+                                        transform.m21 = y * (1 - cos) + x * sin;
                                     } else if ("s".equals(tokens[0])) {
-                                        type = Transform.Type.Scale;
-                                        Vector4f scale = new Vector4f(
-                                            Float.parseFloat(tokens[1]),
-                                            Float.parseFloat(tokens[2]),
-                                            Float.parseFloat(tokens[3]),
-                                            Float.parseFloat(tokens[4])
-                                        );
-                                        transform = new Transform<>(type, scale);
+                                        transform.m00 = Float.parseFloat(tokens[1]);
+                                        transform.m11 = Float.parseFloat(tokens[2]);
+                                        transform.m20 = (1 - transform.m00) * Float.parseFloat(tokens[3]);
+                                        transform.m21 = (1 - transform.m11) * Float.parseFloat(tokens[4]);
                                     } else if ("t".equals(tokens[0])) {
-                                        type = Transform.Type.Translate;
-                                        Vector2f translate = new Vector2f(
-                                            Float.parseFloat(tokens[1]),
-                                            Float.parseFloat(tokens[2])
-                                        );
-                                        transform = new Transform<>(type, translate);
+                                        transform.m20 = Float.parseFloat(tokens[1]);
+                                        transform.m21 = Float.parseFloat(tokens[2]);
+                                    } else if (tokens[0].startsWith("//")) {
+                                        continue;
                                     } else {
                                         break;
                                     }
@@ -140,8 +138,9 @@ public class GeometryFileReader {
                                 break;
                             }
                         }
-                        shapes.add(new RasterPolygon(color, vertices, transforms));
-                        
+                        RasterPolygon polygon = new RasterPolygon(color, vertices);
+                        polygon.getTransforms().addAll(transforms);
+                        shapes.add(polygon);
                     } else {
                         break;
                     }

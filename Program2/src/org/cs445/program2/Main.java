@@ -4,7 +4,7 @@
 * class: CS 445 – Computer Graphics
 *
 * assignment: Program 2
-* date last modified: 10/17/2016 10:44AM
+* date last modified: 10/19/2016 11:07AM
 *
 * purpose: This class loads any models provided, creates the main window, and 
 * renders to it.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cs445.program2.manager.ObjectManager;
+import org.cs445.program2.raster.Raster;
 import org.cs445.program2.raster.Rasterizer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -105,6 +106,9 @@ public class Main {
                 glTranslatef(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f, 0.0f);
                 // render all drawable models
                 Rasterizer.getInstance().getRasterModels().forEach(model -> {
+                    if (model instanceof Raster) {
+                        model = ((Raster) model).transform();
+                    }
                     model.render();
                 });
                 
